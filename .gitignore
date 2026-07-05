@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- project ---
+# Keep raw + processed data tracked (small CSVs, part of the deliverable)
+!data/
+!data/**/*.csv

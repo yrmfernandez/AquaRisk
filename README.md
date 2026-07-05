@@ -1,252 +1,74 @@
-Groundwater Quality Risk Assessment System
+# Groundwater Quality Risk Assessment System
 
-An end-to-end machine learning and full-stack web application for assessing groundwater quality for irrigation suitability, drinking water safety, and anomaly detection. The system combines supervised learning, unsupervised learning, and explainable AI to support informed groundwater quality assessment.
+Assessing groundwater quality for **drinking-water safety** (primary) and
+**irrigation suitability** (secondary), starting from raw field measurements and
+building toward a machine-learning risk-assessment system.
 
-Status: Under Development
-
----
-
-# Project Overview
-
-Groundwater is one of the world's most important freshwater resources for agriculture and domestic use. Evaluating groundwater quality typically requires expert interpretation of multiple chemical parameters, making the process time-consuming and difficult for non-specialists.
-
-This project aims to develop an intelligent decision support system that automatically analyzes groundwater chemical characteristics and provides predictions for different real-world applications.
-
-The system consists of three machine learning modules:
-
-- Irrigation Suitability Classification
-
-  - Predict groundwater irrigation classes (e.g., C2S1, C3S1) from chemical parameters.
-
-- Drinking Water Safety Assessment
-
-  - Predict whether groundwater is suitable for drinking based on engineered labels derived from WHO/BIS standards.
-
-- Groundwater Anomaly Detection
-
-  - Detect chemically unusual groundwater samples using unsupervised learning for early warning and quality control.
-
-To improve transparency, the application also explains model predictions using SHAP (SHapley Additive exPlanations).
+**Status:** Rebuilding — data foundation complete.
 
 ---
 
-# Features
+## Data
 
-- Multi-class irrigation suitability prediction
-- Binary drinking water safety prediction
-- Isolation Forest anomaly detection
-- Interactive web application
-- Explainable AI (SHAP)
-- Prediction confidence scores
-- Data visualization dashboard
-- Prediction history
-- REST API backend
-- Responsive user interface
+Post-monsoon groundwater quality for **Telangana, India**, across **33 districts**
+for **2018, 2019, 2020** (~1,100 samples). Each sample carries location, groundwater
+level, and a full chemistry panel (pH, EC, TDS, carbonates, Cl, F, NO₃, SO₄, Na, K,
+Ca, Mg, hardness) plus irrigation indices (SAR, RSC).
 
----
+| Path | Contents |
+|---|---|
+| `data/raw/` | Original yearly CSVs, unmodified |
+| `data/processed/groundwater_clean_2018_2020.csv` | Cleaned, unified, analysis-ready table |
+| `docs/DATA_DICTIONARY.md` | Column definitions + BIS risk logic |
 
-# Machine Learning Pipeline
+## Data cleaning
 
-```text
-Groundwater Dataset
-        │
-        ▼
-Data Cleaning & Preprocessing
-        │
-        ▼
-Feature Engineering
-        │
-        ├───────────────┐
-        ▼               ▼
-Irrigation Model    Drinking Model
-        │               │
-        └──────┬────────┘
-               ▼
-      Anomaly Detection
-               │
-               ▼
-        SHAP Explainability
-               │
-               ▼
-          Flask REST API
-               │
-               ▼
-        React Web Application
-```
+The raw files have inconsistent column names, stray whitespace, an extra empty
+column in 2020, three different `season` spellings, and some missing values. The
+cleaning pipeline fixes all of these and derives a BIS 10500 drinking-water risk
+label. It is available two ways:
 
----
-
-# Technology Stack
-
-## Machine Learning
-
-- Python
-- Scikit-learn
-- XGBoost
-- Isolation Forest
-- SHAP
-- Joblib
-
-## Data Analysis
-
-- Pandas
-- NumPy
-- Matplotlib
-- Seaborn
-
-## Backend
-
-- Flask
-- Flask-CORS
-
-## Frontend
-
-- React
-- Vite
-- JavaScript
-- HTML
-- CSS
-
-## Development Tools
-
-- Git
-- GitHub
-- Jupyter Notebook
-- VS Code
-
----
-
-# Project Structure
-
-```text
-groundwater-quality-risk-assessment-system/
-│
-├── backend/
-├── frontend/
-├── data/
-├── notebooks/
-├── models/
-├── docs/
-├── scripts/
-├── tests/
-│
-├── README.md
-├── requirements.txt
-├── LICENSE
-└── .gitignore
-```
-
----
-
-# Dataset
-
-The project uses a groundwater quality dataset containing physicochemical parameters collected from groundwater samples.
-
-Example parameters include:
-
-* pH
-* Electrical Conductivity (EC)
-* Total Dissolved Solids (TDS)
-* Calcium
-* Magnesium
-* Sodium
-* Potassium
-* Chloride
-* Sulfate
-* Nitrate
-* Fluoride
-* Bicarbonate
-* Carbonate
-* Total Hardness
-* Sodium Adsorption Ratio (SAR)
-* Residual Sodium Carbonate (RSC)
-
----
-
-# Getting Started
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/yrmfernandez/groundwater-quality-risk-assessment-system.git
-```
-
-## Navigate to the Project
-
-```bash
-cd groundwater-quality-risk-assessment-system
-```
-
-## Install Dependencies
+- **Script (source of truth):** [`src/clean_data.py`](src/clean_data.py)
+- **Notebook (step-by-step walkthrough):** [`notebooks/01_Data_Cleaning.ipynb`](notebooks/01_Data_Cleaning.ipynb)
 
 ```bash
 pip install -r requirements.txt
+python src/clean_data.py
 ```
 
-## Start the Backend
+### Drinking-water risk label
 
-```bash
-cd backend
-python app.py
+Each sample is scored against BIS 10500:2012 acceptable limits (pH, TDS, hardness,
+Cl, **F**, **NO₃**, SO₄, Ca, Mg). The number of exceedances is binned into:
+
+- **Safe** — 0 exceedances
+- **Moderate** — 1–2
+- **High** — 3+
+
+See the data dictionary for exact limits and known data gaps.
+
+## Roadmap
+
+- [x] Clean & unify 2018–2020 data
+- [x] Derive BIS drinking-water risk label
+- [ ] Exploratory data analysis
+- [ ] Drinking-water risk classifier
+- [ ] Irrigation suitability classifier
+- [ ] Anomaly detection + SHAP explainability
+- [ ] Web application
+
+## Project structure
+
 ```
-
-## Start the Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
+├── data/
+│   ├── raw/                  # original CSVs
+│   └── processed/            # cleaned output
+├── notebooks/
+│   └── 01_Data_Cleaning.ipynb
+├── src/
+│   └── clean_data.py
+├── docs/
+│   └── DATA_DICTIONARY.md
+├── requirements.txt
+└── README.md
 ```
-
----
-
-# Development Roadmap
-
-* [x] Initialize GitHub repository
-* [x] Create project structure
-* [x] Perform exploratory data analysis
-* [x] Data preprocessing
-* [x] Irrigation suitability model
-* [ ] Drinking water safety model
-* [ ] Anomaly detection model
-* [ ] SHAP explainability
-* [ ] Flask REST API
-* [ ] React frontend
-* [ ] Database integration
-* [ ] Testing
-* [ ] Deployment
-
----
-
-# Screenshots
-
-Screenshots will be added as development progresses.
-
----
-
-# Future Improvements
-
-- User authentication
-- Interactive GIS map visualization
-- Batch CSV prediction
-- PDF report generation
-- Real-time water quality monitoring
-- Mobile-responsive dashboard
-- Cloud deployment
-- Docker support
-
----
-
-# License
-
-This project is licensed under the MIT License.
-
----
-
-# Author
-
-Yman Rey M. Fernandez
-
-Computer Science Major in Data Science
-
-This project is being developed as a personal portfolio project to demonstrate practical skills in machine learning, data science, and full-stack web development.

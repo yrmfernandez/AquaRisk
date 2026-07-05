@@ -1,25 +1,11 @@
-# Data Manipulation
+# Data
 numpy
 pandas
 
-# Data Visualization
+# Notebooks
+jupyter
+nbconvert
+
+# Visualization (for upcoming EDA)
 matplotlib
 seaborn
-
-# Machine Learning
-scikit-learn
-xgboost
-joblib
-
-# Explainable AI
-shap
-
-# Web Framework
-flask
-flask-cors
-
-# Notebook
-jupyter
-
-# Environment Variables
-python-dotenv
