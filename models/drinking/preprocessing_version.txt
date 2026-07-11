@@ -1,0 +1,7 @@
+Drinking-water risk classifier — preprocessing
+=============================================
+Label encoding : Safe=0, Moderate=1, High=2 (explicit ordinal map)
+Leakage control: excluded bis_exceedances + BIS-tested chemistry (+ z-scores)
+Kept features  : district (one-hot), year, na, k, co3, hco3 (+ z-scores)
+Imbalance      : SMOTE (k_neighbors=5) on training split only
+Model          : XGBoost (tuned via RandomizedSearchCV, f1_macro)
