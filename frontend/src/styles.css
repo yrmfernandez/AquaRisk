@@ -1,0 +1,460 @@
+/* ============================================================
+   Telangana Groundwater — Risk Assessment
+   Palette drawn from the subject: well-water ink, mineral paper,
+   and a risk ramp borrowed from water-quality cartography.
+   Anomaly sits OFF the ramp (violet) because it is a different
+   axis — unusual, not "worse".
+   ============================================================ */
+
+:root {
+  --ink:        #0b2027;  /* deep well water */
+  --ink-2:      #16323c;
+  --paper:      #f2efe6;  /* mineral paper */
+  --paper-2:    #e6e1d3;
+  --rule:       #c9c2ae;
+
+  --safe:       #3d8b8b;  /* teal */
+  --moderate:   #d9a441;  /* ochre */
+  --high:       #a63a2e;  /* iron oxide */
+  --anomaly:    #6b4e8c;  /* violet — deliberately off-ramp */
+
+  --display: "Archivo", system-ui, sans-serif;
+  --body:    "IBM Plex Sans", system-ui, sans-serif;
+  --mono:    "IBM Plex Mono", ui-monospace, monospace;
+
+  --step--1: 0.78rem;
+  --step-0:  0.94rem;
+  --step-1:  1.2rem;
+  --step-2:  1.7rem;
+  --step-3:  2.6rem;
+  --step-4:  clamp(2.8rem, 6vw, 4.4rem);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Masthead ------------------------------------------------ */
+
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2.4rem 1.5rem 2rem;
+  border-bottom: 3px solid var(--ink);
+}
+
+.masthead__inner { max-width: 1180px; margin: 0 auto; }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--safe);
+  margin: 0 0 0.6rem;
+}
+
+.masthead h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--step-4);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.7rem;
+  max-width: 20ch;
+}
+
+.masthead p {
+  margin: 0;
+  max-width: 62ch;
+  color: #b9c6ca;
+  font-size: var(--step-0);
+}
+
+/* --- Layout -------------------------------------------------- */
+
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 2.2rem;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .shell { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--rule);
+  padding: 1.4rem;
+}
+
+.panel__title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: var(--step-1);
+  letter-spacing: -0.01em;
+  margin: 0 0 0.25rem;
+}
+
+.panel__note {
+  font-size: var(--step--1);
+  color: #5f6b6f;
+  margin: 0 0 1.1rem;
+}
+
+/* --- Lab panel form ------------------------------------------ */
+/* Measurements are data: monospace, right-aligned, aligned columns. */
+
+.lab { border-top: 1px solid var(--rule); }
+
+.lab__row {
+  display: grid;
+  grid-template-columns: 1fr 5.4rem 3.4rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--paper-2);
+  padding: 0.32rem 0;
+}
+
+.lab__name {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.lab__name span {
+  display: block;
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: #77817f;
+  letter-spacing: 0;
+}
+
+.lab input {
+  font-family: var(--mono);
+  font-size: var(--step-0);
+  text-align: right;
+  width: 100%;
+  padding: 0.32rem 0.45rem;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.lab input:focus-visible {
+  outline: 2px solid var(--safe);
+  outline-offset: 1px;
+  background: #fff;
+}
+
+.lab input.is-bad {
+  border-color: var(--high);
+  background: #fbeeec;
+}
+
+.lab__unit {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: #8a938f;
+}
+
+.field { margin-bottom: 0.9rem; }
+
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.3rem;
+}
+
+.field select,
+.field input {
+  width: 100%;
+  font-family: var(--body);
+  font-size: var(--step-0);
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.field select:focus-visible,
+.field input:focus-visible {
+  outline: 2px solid var(--safe);
+  outline-offset: 1px;
+}
+
+/* --- Buttons ------------------------------------------------- */
+
+.actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+
+.btn {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: var(--step-0);
+  letter-spacing: 0.01em;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn--primary { background: var(--ink); color: var(--paper); flex: 1; }
+.btn--primary:hover:not(:disabled) { background: var(--ink-2); }
+.btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--ghost { background: transparent; color: var(--ink); }
+.btn--ghost:hover { background: var(--paper-2); }
+
+.btn:focus-visible { outline: 2px solid var(--safe); outline-offset: 2px; }
+
+/* --- Results ------------------------------------------------- */
+
+.results { display: grid; gap: 1.2rem; }
+
+.verdict {
+  border: 1px solid var(--rule);
+  background: #fff;
+  padding: 1.3rem 1.4rem;
+  border-left: 6px solid var(--rule);
+}
+
+.verdict--safe     { border-left-color: var(--safe); }
+.verdict--moderate { border-left-color: var(--moderate); }
+.verdict--high     { border-left-color: var(--high); }
+.verdict--anomaly  { border-left-color: var(--anomaly); }
+
+.verdict__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.verdict__label {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6d7876;
+}
+
+.verdict__value {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--step-2);
+  letter-spacing: -0.02em;
+  margin: 0.1rem 0 0;
+}
+
+.verdict__value--safe     { color: var(--safe); }
+.verdict__value--moderate { color: var(--moderate); }
+.verdict__value--high     { color: var(--high); }
+.verdict__value--anomaly  { color: var(--anomaly); }
+
+.confidence {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: #6d7876;
+  white-space: nowrap;
+}
+
+/* Probability bars: the model's own uncertainty, shown honestly. */
+.probs { margin-top: 0.9rem; display: grid; gap: 0.3rem; }
+
+.prob {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 3rem;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+}
+
+.prob__track { height: 6px; background: var(--paper-2); }
+.prob__fill  { height: 100%; transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.prob__pct   { text-align: right; color: #6d7876; }
+
+/* --- SHAP explanation ---------------------------------------- */
+/* Signed contributions diverging from a centre axis — the sign is
+   the information, so the axis must be visible. */
+
+.why { margin-top: 1.1rem; border-top: 1px solid var(--paper-2); padding-top: 0.9rem; }
+
+.why__title {
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d7876;
+  margin: 0 0 0.6rem;
+}
+
+.shap { display: grid; gap: 0.32rem; }
+
+.shap__row {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+}
+
+.shap__axis {
+  position: relative;
+  height: 16px;
+  background: var(--paper);
+  border-left: 1px solid var(--paper-2);
+  border-right: 1px solid var(--paper-2);
+}
+
+.shap__axis::before {           /* the zero line */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule);
+}
+
+.shap__bar {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  transition: width 0.45s ease;
+}
+
+.shap__bar--up   { left: 50%;  background: var(--high); }
+.shap__bar--down { right: 50%; background: var(--safe); }
+
+.shap__legend {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: #8a938f;
+  margin-top: 0.4rem;
+}
+
+/* --- USSL diagram (signature) -------------------------------- */
+
+.ussl { margin-top: 0.4rem; }
+
+.ussl svg { width: 100%; height: auto; display: block; }
+
+.ussl__caption {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: #77817f;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.6); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ussl__well { animation: drop-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+
+@keyframes ping {
+  from { r: 7;  opacity: 0.55; }
+  to   { r: 20; opacity: 0; }
+}
+
+.ussl__ping { animation: ping 1.9s ease-out infinite; }
+
+/* --- Empty & error states ------------------------------------ */
+
+.empty {
+  border: 1px dashed var(--rule);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #6d7876;
+}
+
+.empty h3 {
+  font-family: var(--display);
+  font-size: var(--step-1);
+  color: var(--ink);
+  margin: 0 0 0.4rem;
+}
+
+.empty p { margin: 0; font-size: var(--step--1); max-width: 44ch; margin-inline: auto; }
+
+.alert {
+  border: 1px solid var(--high);
+  border-left: 6px solid var(--high);
+  background: #fbeeec;
+  padding: 0.9rem 1rem;
+  font-size: var(--step--1);
+}
+
+.alert__title {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: var(--step--1);
+  margin: 0 0 0.35rem;
+  color: var(--high);
+}
+
+.alert ul { margin: 0; padding-left: 1.1rem; }
+
+.warn {
+  border: 1px solid var(--moderate);
+  border-left: 6px solid var(--moderate);
+  background: #fdf6e7;
+  padding: 0.7rem 0.9rem;
+  font-size: var(--step--1);
+  margin-top: 0.9rem;
+}
+
+/* --- Caveat -------------------------------------------------- */
+
+.caveat {
+  border-top: 2px solid var(--ink);
+  margin-top: 0.4rem;
+  padding-top: 0.9rem;
+  font-size: var(--step--1);
+  color: #5f6b6f;
+  max-width: 76ch;
+}
+
+.caveat strong { color: var(--ink); }
+
+/* --- Motion preference --------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
