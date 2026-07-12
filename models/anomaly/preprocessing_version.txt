@@ -1,0 +1,7 @@
+Groundwater anomaly detector — preprocessing
+===========================================
+Features      : full chemistry panel (13) -> ['ph', 'tds', 'co3', 'hco3', 'cl', 'f', 'no3', 'so4', 'na', 'k', 'ca', 'mg', 'th']
+Scaler        : RobustScaler (median/IQR; resistant to the outliers detected)
+Model         : IsolationForest(n_estimators=200, contamination='auto')
+Unsupervised  : no target used; BIS chemistry included by design (nothing to leak)
+Output        : anomaly_score (lower = more anomalous); -1 = flagged
