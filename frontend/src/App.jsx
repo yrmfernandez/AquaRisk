@@ -21,8 +21,8 @@ const PANEL = [
   { k: "th",   name: "TH",   unit: "mg/L", hint: "Total hardness" },
 ];
 
-/* Two real samples from the dataset — so a first-time visitor can see the
-   system work without hunting for a lab report. */
+/* Two real samples from the dataset, so a first-time visitor can watch the
+   system work without owning a lab report. */
 const SAMPLES = {
   contaminated: {
     ph: 7.9, tds: 2040, co3: 13, hco3: 460, cl: 568, f: 1.6, no3: 222,
@@ -41,25 +41,39 @@ const EMPTY = Object.fromEntries(PANEL.map((p) => [p.k, ""]));
 const slug = (s) => s.toLowerCase();
 const pct = (x) => Math.round((x ?? 0) * 100);
 
-/* Wordmark: a well section. Two strata, a water table, a sample point.
-   Drawn rather than imported so it inherits currentColor and needs no asset. */
+/* Wordmark: a well section — two strata, a water table, a sample point.
+   Drawn rather than imported so it inherits currentColor and ships no asset. */
 function Mark({ size = 26 }) {
   return (
-    <svg
-      className="brand__mark"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <rect x="1" y="1" width="22" height="22" stroke="currentColor" strokeOpacity="0.35" />
-      <path d="M1 9h22" stroke="currentColor" strokeOpacity="0.35" />
+    <svg className="nav__mark" width={size} height={size} viewBox="0 0 24 24"
+         fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="22" height="22" rx="4"
+            stroke="currentColor" strokeOpacity="0.3" />
+      <path d="M1 9h22" stroke="currentColor" strokeOpacity="0.3" />
       <path d="M1 14.5c3.2 0 3.2-1.8 6.4-1.8s3.2 1.8 6.4 1.8 3.2-1.8 6.4-1.8c1.1 0 1.7.2 2.3.5"
-            stroke="#3d8b8b" strokeWidth="1.4" />
-      <path d="M12 1v7.6" stroke="currentColor" strokeOpacity="0.55" strokeWidth="1.2" />
-      <circle cx="12" cy="14.4" r="2.6" fill="#3d8b8b" />
-      <circle cx="12" cy="14.4" r="0.9" fill="#0b2027" />
+            stroke="var(--safe)" strokeWidth="1.4" />
+      <path d="M12 1v7.6" stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.2" />
+      <circle cx="12" cy="14.4" r="2.6" fill="var(--safe)" />
+    </svg>
+  );
+}
+
+function Sun() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  );
+}
+
+function Moon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+         strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
     </svg>
   );
 }
@@ -76,13 +90,79 @@ function Skeleton() {
   );
 }
 
+/* The right column, before anything has been run.
+   The old version said "No sample assessed yet" and taught a newcomer
+   nothing — it was a large void with a label. This states what the tool
+   does, previews the three verdicts that will land here, and gives the
+   one statistic that explains why any of it matters. */
+function Landing() {
+  return (
+    <div className="landing">
+      <p className="landing__eyebrow">What this does</p>
+      <h2 className="landing__title">Three reads on one water sample.</h2>
+      <p className="landing__body">
+        Enter a well&rsquo;s chemistry on the left and three models assess it
+        independently. Their verdicts appear here — each one showing not just
+        the answer but the chemistry that drove it.
+      </p>
+
+      <div className="preview">
+        <div className="pv pv--1">
+          <span className="pv__n">01</span>
+          <p className="pv__t">Drinking safety</p>
+          <p className="pv__d">Safe, Moderate or High risk, against the BIS 10500 standard.</p>
+        </div>
+        <div className="pv pv--2">
+          <span className="pv__n">02</span>
+          <p className="pv__t">Irrigation class</p>
+          <p className="pv__d">Where the well falls on the USSL salinity–sodium grid.</p>
+        </div>
+        <div className="pv pv--3">
+          <span className="pv__n">03</span>
+          <p className="pv__t">Chemistry check</p>
+          <p className="pv__d">Whether this sample is unlike anything the models trained on.</p>
+        </div>
+      </div>
+
+      <div className="hook">
+        <span className="hook__num">62%</span>
+        <p className="hook__txt">
+          of the <strong>1,106 wells</strong> in this dataset exceed at least one BIS
+          drinking-water limit. Nitrate alone fails in <strong>46%</strong> of samples.
+          The point isn&rsquo;t to replace a lab — it&rsquo;s to decide which wells get
+          tested first.
+        </p>
+      </div>
+
+      <p className="landing__cta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Load a real sample to begin
+      </p>
+    </div>
+  );
+}
+
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("aquarisk-theme");
+    if (saved) return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+
   const [meta, setMeta] = useState(null);
   const [form, setForm] = useState({ ...EMPTY, district: "", year: 2020 });
   const [result, setResult] = useState(null);
   const [errors, setErrors] = useState([]);
   const [busy, setBusy] = useState(false);
   const [offline, setOffline] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("aquarisk-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     fetch("/api/metadata")
@@ -94,7 +174,7 @@ export default function App() {
   const ranges = meta?.field_ranges ?? {};
 
   /* Flag out-of-range values as the user types, rather than waiting for the
-     server to reject the whole form. */
+     server to reject the whole form at once. */
   const bad = useMemo(() => {
     const out = {};
     for (const p of PANEL) {
@@ -108,8 +188,7 @@ export default function App() {
   }, [form, ranges]);
 
   const filled = PANEL.filter((p) => form[p.k] !== "" && form[p.k] != null).length;
-  const complete = filled === PANEL.length;
-  const canSubmit = complete && Object.keys(bad).length === 0 && !busy;
+  const canSubmit = filled === PANEL.length && Object.keys(bad).length === 0 && !busy;
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -159,45 +238,69 @@ export default function App() {
   const irr = result?.irrigation;
   const an = result?.anomaly;
 
+  const idle = !result && !busy && !offline && errors.length === 0;
+
   return (
     <>
       {/* ================= Masthead ================= */}
       <header className="masthead">
         <div className="masthead__inner">
-          <div className="brand">
+          <nav className="nav">
             <Mark />
-            <span className="brand__name">
-              <b>AquaRisk</b> <i>/ Telangana</i>
+            <span className="nav__name">
+              AquaRisk <i>/ Telangana</i>
             </span>
-            <span className="brand__meta">BIS 10500 · USSL</span>
+            <span className="nav__meta">BIS 10500 · USSL</span>
+            <button
+              className="toggle"
+              onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </button>
+          </nav>
+
+          <div className="hero">
+            <p className="eyebrow">
+              <span className="eyebrow__dot" />
+              Post-monsoon · 2018–2020
+            </p>
+
+            <h1>
+              Read a well before you <em>drink</em> from it.
+            </h1>
+
+            <p className="hero__lede">
+              Groundwater is the primary drinking source across rural Telangana, and most of it
+              is never tested. Enter a sample&rsquo;s chemistry and three models assess it —
+              drinking safety, irrigation suitability, and whether the chemistry itself is
+              strange enough to distrust the answer.
+            </p>
+
+            <dl className="stats">
+              <div className="stat">
+                <span className="stat__value">33</span>
+                <span className="stat__label">Districts</span>
+              </div>
+              <div className="stat">
+                <span className="stat__value">1,106</span>
+                <span className="stat__label">Samples</span>
+              </div>
+              <div className="stat">
+                <span className="stat__value stat__value--alarm">62%</span>
+                <span className="stat__label">Exceed a BIS limit</span>
+              </div>
+              <div className="stat">
+                <span className="stat__value">13</span>
+                <span className="stat__label">Parameters</span>
+              </div>
+              <div className="stat">
+                <span className="stat__value">3</span>
+                <span className="stat__label">Models</span>
+              </div>
+            </dl>
           </div>
-
-          <p className="eyebrow">Post-monsoon · 2018–2020</p>
-          <h1>Read a well before you drink from it.</h1>
-          <p className="masthead__lede">
-            Enter a water sample&rsquo;s chemistry. Three models assess it — drinking safety
-            against BIS&nbsp;10500, irrigation suitability on the USSL grid, and whether the
-            chemistry itself is unusual enough to warrant a second look.
-          </p>
-
-          <dl className="stats">
-            <div className="stat">
-              <span className="stat__value">33</span>
-              <span className="stat__label">Districts</span>
-            </div>
-            <div className="stat">
-              <span className="stat__value">1,106</span>
-              <span className="stat__label">Samples</span>
-            </div>
-            <div className="stat">
-              <span className="stat__value">13</span>
-              <span className="stat__label">Parameters</span>
-            </div>
-            <div className="stat">
-              <span className="stat__value">3</span>
-              <span className="stat__label">Models</span>
-            </div>
-          </dl>
         </div>
       </header>
 
@@ -206,10 +309,29 @@ export default function App() {
         <section className="panel panel--sticky" aria-labelledby="panel-title">
           <h2 className="panel__title" id="panel-title">Sample</h2>
           <p className="panel__note">
-            All thirteen readings are required — {filled} of {PANEL.length} entered.
+            {filled} of {PANEL.length} readings entered
           </p>
 
-          <div className="field field__pair">
+          <div className="progress" aria-hidden="true">
+            <div
+              className="progress__fill"
+              style={{ width: `${(filled / PANEL.length) * 100}%` }}
+            />
+          </div>
+
+          <div className="presets">
+            <p className="presets__label">Start from a real sample</p>
+            <div className="presets__row">
+              <button className="btn--tiny" onClick={() => load("clean")}>
+                Adilabad · clean
+              </button>
+              <button className="btn--tiny" onClick={() => load("contaminated")}>
+                Nalgonda · unsafe
+              </button>
+            </div>
+          </div>
+
+          <div className="field field__pair" style={{ marginTop: "1.1rem" }}>
             <div>
               <label htmlFor="district">District</label>
               <select
@@ -267,18 +389,6 @@ export default function App() {
             </button>
             <button className="btn btn--ghost" onClick={clear}>Clear</button>
           </div>
-
-          <div className="presets">
-            <p className="presets__label">Or load a real sample</p>
-            <div className="presets__row">
-              <button className="btn--tiny" onClick={() => load("clean")}>
-                Adilabad · clean
-              </button>
-              <button className="btn--tiny" onClick={() => load("contaminated")}>
-                Nalgonda · contaminated
-              </button>
-            </div>
-          </div>
         </section>
 
         {/* ================= Results ================= */}
@@ -305,24 +415,7 @@ export default function App() {
             </>
           )}
 
-          {!result && !busy && !offline && errors.length === 0 && (
-            <div className="empty">
-              <svg className="empty__mark" width="34" height="34" viewBox="0 0 24 24"
-                   fill="none" aria-hidden="true">
-                <path d="M1 13c3.2 0 3.2-1.8 6.4-1.8s3.2 1.8 6.4 1.8 3.2-1.8 6.4-1.8c1.1 0 1.7.2 2.3.5"
-                      stroke="#3d8b8b" strokeWidth="1.3" />
-                <path d="M1 18c3.2 0 3.2-1.8 6.4-1.8s3.2 1.8 6.4 1.8 3.2-1.8 6.4-1.8c1.1 0 1.7.2 2.3.5"
-                      stroke="#3d8b8b" strokeWidth="1.3" strokeOpacity="0.45" />
-                <path d="M12 2v7" stroke="#0b2027" strokeWidth="1.3" strokeOpacity="0.5" />
-                <circle cx="12" cy="9.6" r="1.8" fill="#0b2027" fillOpacity="0.5" />
-              </svg>
-              <h3>No sample assessed yet</h3>
-              <p>
-                Fill in the panel, or load one of the two real samples from the dataset
-                to see how the models read a well.
-              </p>
-            </div>
-          )}
+          {idle && <Landing />}
 
           {d && !busy && (
             <article className={`verdict verdict--${slug(d.risk)}`}>
@@ -390,7 +483,7 @@ export default function App() {
                 </div>
                 <span className="confidence">score {an.anomaly_score}</span>
               </div>
-              <p className="card__body" style={{ marginTop: "0.7rem" }}>
+              <p className="card__body" style={{ marginTop: "0.65rem" }}>
                 {an.interpretation}
               </p>
             </article>
@@ -435,7 +528,7 @@ export default function App() {
               <div className="excluded">
                 <p className="excluded__label">Withheld — defines the label</p>
                 <div className="chips">
-                  {["f", "no3", "tds", "ph", "so4", "cl", "th", "ca", "mg", "bis_exceedances"]
+                  {["f", "no3", "tds", "ph", "so4", "cl", "th", "ca", "mg"]
                     .map((c) => <span className="chip" key={c}>{c}</span>)}
                 </div>
               </div>
@@ -484,7 +577,7 @@ export default function App() {
             </article>
           </div>
 
-          <p className="caveat" style={{ marginTop: "2.4rem" }}>
+          <p className="caveat" style={{ marginTop: "2.2rem" }}>
             <strong>Macro-F1, not accuracy.</strong> The risk classes are heavily imbalanced —
             a model that predicted the majority class every time would post a flattering accuracy
             and be useless. Macro-F1 weights each class equally, so the rare-but-consequential
