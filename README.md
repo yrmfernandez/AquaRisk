@@ -1,74 +1,45 @@
-# Groundwater Quality Risk Assessment System
+---
+title: AquaRisk
+emoji: 💧
+colorFrom: gray
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
 
-Assessing groundwater quality for **drinking-water safety** (primary) and
-**irrigation suitability** (secondary), starting from raw field measurements and
-building toward a machine-learning risk-assessment system.
+# AquaRisk — Telangana Groundwater Quality Risk Assessment
 
-**Status:** Rebuilding — data foundation complete.
+Enter a well's water chemistry; three models assess it.
+
+- **Drinking safety** — Safe / Moderate / High against BIS 10500:2012
+- **Irrigation suitability** — USSL classification from ion chemistry
+- **Chemistry check** — Isolation Forest flags samples unlike anything in training
+
+Trained on 1,106 post-monsoon groundwater samples from 33 Telangana districts, 2018–2020.
+
+## What the models were not allowed to see
+
+A drinking-safety label derived from BIS thresholds is a function of the very chemistry
+that defines it. Feed fluoride and nitrate back in as features and the model scores
+near-perfectly while learning nothing — it has simply read the answer. Those columns were
+withheld.
+
+| Model | Macro-F1 | Withheld |
+|---|---|---|
+| Drinking (XGBoost) | 0.670 | `f`, `no3`, `tds`, `ph`, `so4`, `cl`, `th`, `ca`, `mg` |
+| Irrigation (Random Forest) | 0.735 | `ec`, `sar`, `tds` — the USSL grid is computed from these |
+| Anomaly (Isolation Forest) | — | unsupervised |
+
+Macro-F1, not accuracy: the risk classes are heavily imbalanced, and a model predicting the
+majority class every time would post a flattering accuracy and be useless.
+
+## Caveat
+
+These are estimates, not laboratory results. The drinking model is a triage aid for deciding
+where to send test kits first. Confirm any consequential decision with a lab panel.
 
 ---
 
-## Data
-
-Post-monsoon groundwater quality for **Telangana, India**, across **33 districts**
-for **2018, 2019, 2020** (~1,100 samples). Each sample carries location, groundwater
-level, and a full chemistry panel (pH, EC, TDS, carbonates, Cl, F, NO₃, SO₄, Na, K,
-Ca, Mg, hardness) plus irrigation indices (SAR, RSC).
-
-| Path | Contents |
-|---|---|
-| `data/raw/` | Original yearly CSVs, unmodified |
-| `data/processed/groundwater_clean_2018_2020.csv` | Cleaned, unified, analysis-ready table |
-| `docs/DATA_DICTIONARY.md` | Column definitions + BIS risk logic |
-
-## Data cleaning
-
-The raw files have inconsistent column names, stray whitespace, an extra empty
-column in 2020, three different `season` spellings, and some missing values. The
-cleaning pipeline fixes all of these and derives a BIS 10500 drinking-water risk
-label. It is available two ways:
-
-- **Script (source of truth):** [`src/clean_data.py`](src/clean_data.py)
-- **Notebook (step-by-step walkthrough):** [`notebooks/01_Data_Cleaning.ipynb`](notebooks/01_Data_Cleaning.ipynb)
-
-```bash
-pip install -r requirements.txt
-python src/clean_data.py
-```
-
-### Drinking-water risk label
-
-Each sample is scored against BIS 10500:2012 acceptable limits (pH, TDS, hardness,
-Cl, **F**, **NO₃**, SO₄, Ca, Mg). The number of exceedances is binned into:
-
-- **Safe** — 0 exceedances
-- **Moderate** — 1–2
-- **High** — 3+
-
-See the data dictionary for exact limits and known data gaps.
-
-## Roadmap
-
-- [x] Clean & unify 2018–2020 data
-- [x] Derive BIS drinking-water risk label
-- [ ] Exploratory data analysis
-- [ ] Drinking-water risk classifier
-- [ ] Irrigation suitability classifier
-- [ ] Anomaly detection + SHAP explainability
-- [ ] Web application
-
-## Project structure
-
-```
-├── data/
-│   ├── raw/                  # original CSVs
-│   └── processed/            # cleaned output
-├── notebooks/
-│   └── 01_Data_Cleaning.ipynb
-├── src/
-│   └── clean_data.py
-├── docs/
-│   └── DATA_DICTIONARY.md
-├── requirements.txt
-└── README.md
-```
+Source: [github.com/yrmfernandez/AquaRisk](https://github.com/yrmfernandez/AquaRisk)

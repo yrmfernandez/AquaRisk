@@ -1,0 +1,30 @@
+# The image needs backend/, models/, frontend/ source, requirements.txt.
+# Everything else is repo furniture and only slows the build down.
+
+.git
+.gitignore
+
+notebooks/
+data/
+docs/
+tests/
+scripts/
+src/
+*.csv
+
+frontend/node_modules/
+frontend/dist/
+node_modules/
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+.DS_Store
+Thumbs.db
+
+# Local dev config that must not leak into a public image.
+.env
+.env.*
