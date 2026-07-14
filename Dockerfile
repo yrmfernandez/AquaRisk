@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+# Use backend/requirements.txt — the root one is for notebooks.
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
@@ -31,5 +32,4 @@ COPY --from=frontend /build/dist ./frontend/dist
 ENV FLASK_DEBUG=0 \
     PYTHONUNBUFFERED=1
 
-# Shell form (not array) so $PORT is expanded at runtime from Render's env.
 CMD gunicorn "backend.app:create_app()" --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 180
